@@ -1,81 +1,66 @@
+import subprocess
+import os
 from tkinter import *
-from tkinter import ttk
-import requests
-root =Tk()
-class RealTimeCurrencyConverter():
-    def __init__(self,url):
-        self.data= requests.get(url).json()
-        self.currencies = self.data['rates']
+from tkinter import ttk, messagebox, Tk
+from tkinter import scrolledtext
 
-    def convert(self, from_currency, to_currency, amount):
-        initial_amount = amount
-        if from_currency != 'USD':
-            amount = amount / self.currencies[from_currency]
-        amount = round(amount * self.currencies[to_currency], 4)
-        return amount
-class convertermoeda(RealTimeCurrencyConverter):
-    def __init__(self):
-        self.root = root
-        self.janela()
-        self.aplicacao()
-        root.mainloop()
 
-    def janela(self):
-        self.root.title("Converter Moedas")
-        self.root.geometry("445x300")
-        self.root.resizable(False, False)
-    def aplicacao(self):
-        # Moeda Inical
-        self.moeda_inicial = StringVar()
-        self.option1 = ['USD', 'EUR', 'BRL', 'JPY',
-                        'GBP', 'CAD','CNY']
-        self.texto1 = Label(text=" Moeda Inicial ",
-                            font=("Helvetica", '10'))
-        self.texto1.place(relx=0.15, rely=0.05)
-        self.cb1 =ttk.Combobox(values= self.option1, width=10,
-                               textvariable=self.moeda_inicial)
-        self.cb1.place(relx=0.15, rely=0.2)
-        # Moeda Final
-        self.moeda_final = StringVar()
-        self.option2 = ['USD', 'EUR', 'BRL', 'JPY', 'GBP',
-                        'CAD', 'CNY']
-        self.texto2 = Label(text=" Moeda Final ", font=("Helvetica", '10'))
-        self.texto2.place(relx=0.55, rely=0.05)
-        self.cb2 = ttk.Combobox(values=self.option2, width=10,
-                                textvariable=self.moeda_final)
-        self.cb2.place(relx=0.55, rely=0.2)
+janela  = Tk()
 
-        # Montante
-        self.montante = DoubleVar()
-        self.montante_lb = Label(text=" Montante ", font=("Helvetica", '10'))
-        self.montante_lb.place(relx=0.15, rely=0.45)
-        self.montante_entry = Entry(textvariable=self.montante)
-        self.montante_entry.place(relx=0.45, rely=0.45)
 
-        # Butão de calcular o Total do produto
-        self.bt_calcular = Button(text="Calcular", bd=2,
-                                  font=('verdana', '8', 'bold'), bg='gray18',
-                                  fg='white',
-                                  command=self.butao1)
-        self.bt_calcular.place(relx=0.4, rely=0.6, relwidth=0.2, relheight=0.1)
+class janela1():
+    def __init__(self): 
+        self.janela = janela
+        self.tela_principal()
+        janela.mainloop()
+        
+    #Tele principal
+    def tela_principal(self):
+        self.janela.title('PING PYTHON ')
+        self.janela.configure(background='#0B3861') #Background da pagina
+        self.janela.geometry('800x500') # Tamanho da janela
+        self.janela.resizable(False, False) #Se pode aumentar e diminuir tamabnho da janela
+        self.janela.maxsize(width=2000, height=1000) #Tamanho maximo da tela
+        self.janela.minsize(width=600, height=500) #Tamanho minimo da tela
+        
+        self.pingar = Button(self.janela, text="Fazer ping",command=self.ping_test, cursor='hand2' ,bg='green', fg='white', font='arial 12')
+        self.pingar.place(x=20, y=20, width=100, height=50)
 
-        # Resultado
-        self.resultadocambio = StringVar()
-        self.lb_resultadocambio = Label(text="Resultado da Conversão",
-                                 font=("Helvetica", '10', 'italic'))
-        self.lb_resultadocambio.place(relx=0.15, rely=0.75)
-        self.resultadocambio_lb2 = Label(textvariable=self.resultadocambio,
-                                         font=("Helvetica", '8'))
-        self.resultadocambio_lb2.place(relx=0.5, rely=0.75)
+        self.caminho_ping = Entry(self.janela, font='arial 12')
+        self.caminho_ping.place(x=150, y=30, height=40)
 
-    def butao1(self):
-      moedainicial = self.moeda_inicial.get()
-      moedafinal = self.moeda_final.get()
-      montantec = self.montante.get()
-      # Converter
-      url = 'https://api.exchangerate-api.com/v4/latest/USD'
-      converterteste = RealTimeCurrencyConverter(url)
-      a = round(converterteste.convert(moedainicial, moedafinal, montantec), 2)
-      return self.resultadocambio.set(a)
+        self.label1 = Label(self.janela, bg='yellow', text='RESULTADO PING', fg='green', font='arial 14')
+        self.label1.place(x=250, y=400, width=250, height=60)
 
-convertermoeda()
+
+
+        self.textos = scrolledtext.ScrolledText(self.janela,width=50,height=10)
+        #self.textos.insert(INSERT,'oi' )
+        self.textos.place(x=200, y=100)
+
+    def progres_bar(self):
+        pb = ttk.Progressbar(self.janela, orient="horizontal", length=300,mode="determinate")
+        pb.pack(side='bottom')
+        self.label1['text'] = pb
+        pb.start()
+        
+        
+        
+        
+
+    def ping_test (self):
+        hostname = self.caminho_ping.get()#"www.google.com" #example
+        response = os.system(f"ping -n 5 {hostname}")
+        
+        self.label1["text"] = 'Percas', response
+        
+
+        #and then check the response...
+        if response == 0:
+            print (hostname, 'Esta para cima!')
+            self.textos.insert(INSERT,'\nTotal de pecas: {} de {}'.format(response, hostname))
+        else:
+            print (hostname, 'Esta para baixo!')
+            
+
+janela1()
